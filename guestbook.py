@@ -14,12 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from google.appengine.api import users
+
 import webapp2
+
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Hello Anyone!')
+        #checks for active google account session
+        user = users.get_current_user()
+        
+        if user:
+            self.response.headers['Content-Type'] = 'text/html; charset=utf-8'
+            self.response.write('Hello, ' + user.nickname())
+        else:
+            self.redirect(users.create_login_url(self.request.uri))
+            
+       
 
 app = webapp2.WSGIApplication([
     ('/', MainPage)
